@@ -5,9 +5,13 @@ import com.jinternals.cron.mcp.server.services.cron.CronStrategy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.jinternals.cron.mcp.server.utils.Util.*;
 
@@ -26,15 +30,25 @@ public class MacLaunchdStrategy implements CronStrategy {
     }
 
     @Override
-    public String systemCron() throws Exception {
+    public String systemCron() {
         StringBuilder sb = new StringBuilder();
         Path ld = Path.of("/Library/LaunchDaemons");
         Path sld = Path.of("/System/Library/LaunchDaemons");
+
         sb.append(readAllFilesUnder(ld, "# /Library/LaunchDaemons/"));
         sb.append(readAllFilesUnder(sld, "# /System/Library/LaunchDaemons/"));
 
         Path etc = Path.of("/etc/crontab");
-        if (Files.exists(etc)) sb.append("# /etc/crontab\n").append(Files.readString(etc)).append("\n\n");
+        try {
+            if (Files.exists(etc) && Files.isReadable(etc)) {
+                sb.append("# /etc/crontab\n")
+                        .append(Files.readString(etc, StandardCharsets.UTF_8))
+                        .append("\n\n");
+            }
+        } catch (IOException e) {
+            sb.append("# Error reading /etc/crontab: ").append(e.getClass().getSimpleName())
+                    .append(" - ").append(e.getMessage()).append("\n\n");
+        }
 
         return sb.length() == 0 ? "# (no LaunchDaemons or crontab found)" : sb.toString();
     }
@@ -103,5 +117,61 @@ public class MacLaunchdStrategy implements CronStrategy {
             }
         }
         return "Removed LaunchAgents matching: " + match;
+    }
+
+    private String readAllFilesUnder(Path dir, String header) {
+        StringBuilder out = new StringBuilder();
+        if (!Files.exists(dir)) return "";
+
+        out.append(header).append("\n");
+        try (Stream<Path> stream = Files.walk(dir, 1)) { // non-recursive; change depth if needed
+            stream.filter(p -> !p.equals(dir))
+                    .forEach(path -> {
+                        try {
+                            if (!Files.isRegularFile(path)) {
+                                out.append("# Skipping non-regular file: ").append(path).append("\n");
+                                return;
+                            }
+                            if (!Files.isReadable(path)) {
+                                out.append("# Unreadable (permission): ").append(path).append("\n");
+                                return;
+                            }
+
+                            // Try to detect if file is text (basic heuristic)
+                            byte[] head = new byte[Math.min(512, (int) Files.size(path))];
+                            try (var is = Files.newInputStream(path)) {
+                                int read = is.read(head);
+                                boolean binary = false;
+                                for (int i = 0; i < read; i++) {
+                                    byte b = head[i];
+                                    if (b == 0) { binary = true; break; }
+                                    // crude control-char test
+                                    if (b < 0x09 || (b > 0x0A && b < 0x20)) { binary = true; break; }
+                                }
+
+                                out.append("# File: ").append(path.getFileName()).append("\n");
+                                if (binary) {
+                                    // macOS binary plist: give hint to convert or skip
+                                    out.append("# (binary file — use `plutil -convert xml1` if you need text)\n\n");
+                                } else {
+                                    // safe to read as UTF-8 text
+                                    String content = Files.readString(path, StandardCharsets.UTF_8);
+                                    out.append(content).append("\n\n");
+                                }
+                            }
+                        } catch (AccessDeniedException ade) {
+                            out.append("# Access denied: ").append(path).append(" - ").append(ade.getMessage()).append("\n\n");
+                        } catch (IOException ioe) {
+                            out.append("# IO error reading ").append(path).append(": ").append(ioe.getClass().getSimpleName())
+                                    .append(" - ").append(ioe.getMessage()).append("\n\n");
+                        } catch (Exception ex) {
+                            out.append("# Unexpected error reading ").append(path).append(": ")
+                                    .append(ex.getClass().getSimpleName()).append(" - ").append(ex.getMessage()).append("\n\n");
+                        }
+                    });
+        } catch (IOException e) {
+            out.append("# Error walking directory ").append(dir).append(": ").append(e.getMessage()).append("\n");
+        }
+        return out.toString();
     }
 }
