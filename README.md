@@ -24,4 +24,4 @@ Cross-platform **cron and task scheduler integration layer** exposing a Model Co
 npx @modelcontextprotocol/inspector
 ```
 
-![inspector.png](images/inspector.png)
+![./images/inspector.png](images/inspector.png)
