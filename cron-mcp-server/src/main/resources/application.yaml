@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cron-mcp-server
+  profiles:
+    default: stdio
+  ai:
+    mcp:
+      server:
+        name: cron-mcp-server
+        version: 1.0.0
+        instructions: "This mcp server provides tools to manager cron jobs"
+
+
+logging.level.org.springframework.ai: DEBUG
+logging.level.io.modelcontextprotocol: DEBUG

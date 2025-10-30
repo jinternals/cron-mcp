@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  ai:
+    mcp:
+      server:
+        stdio: true
+
+
+
+logging.level.org.springframework.ai: DEBUG
+logging.level.io.modelcontextprotocol: DEBUG
