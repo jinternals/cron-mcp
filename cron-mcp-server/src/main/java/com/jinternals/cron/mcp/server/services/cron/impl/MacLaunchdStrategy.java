@@ -1,7 +1,7 @@
-package com.jinternals.demo.ai.mcp.server.services.cron.impl;
+package com.jinternals.cron.mcp.server.services.cron.impl;
 
-import com.jinternals.demo.ai.mcp.server.constants.OS;
-import com.jinternals.demo.ai.mcp.server.services.cron.CronStrategy;
+import com.jinternals.cron.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.services.cron.CronStrategy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.jinternals.demo.ai.mcp.server.utils.Util.*;
+import static com.jinternals.cron.mcp.server.utils.Util.*;
 
 @Component
 @ConditionalOnProperty(name = "cron.mac.backend", havingValue = "launchd", matchIfMissing = true)
@@ -68,7 +68,7 @@ public class MacLaunchdStrategy implements CronStrategy {
 
     @Override
     public String addJob(String schedule, String command, String nameHint) throws Exception {
-        String label = ("com.example.cronmcp." + (nameHint == null ? String.valueOf(System.currentTimeMillis()) : nameHint))
+        String label = ("com.jinternals.cronmcp." + (nameHint == null ? String.valueOf(System.currentTimeMillis()) : nameHint))
                 .replaceAll("[^a-zA-Z0-9._-]", "_");
         String[] p = schedule.trim().split("\\s+");
         int minute = (p.length > 0 && p[0].matches("\\d+")) ? Integer.parseInt(p[0]) : 0;

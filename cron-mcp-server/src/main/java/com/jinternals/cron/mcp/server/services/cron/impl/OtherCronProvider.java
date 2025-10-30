@@ -1,7 +1,7 @@
-package com.jinternals.demo.ai.mcp.server.services.cron.impl;
+package com.jinternals.cron.mcp.server.services.cron.impl;
 
-import com.jinternals.demo.ai.mcp.server.services.cron.CronStrategy;
-import com.jinternals.demo.ai.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.services.cron.CronStrategy;
+import com.jinternals.cron.mcp.server.constants.OS;
 import org.springframework.stereotype.Component;
 
 @Component

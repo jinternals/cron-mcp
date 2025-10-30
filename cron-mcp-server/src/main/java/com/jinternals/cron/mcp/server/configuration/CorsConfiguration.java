@@ -1,4 +1,4 @@
-package com.jinternals.demo.ai.mcp.server.configuration;
+package com.jinternals.cron.mcp.server.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

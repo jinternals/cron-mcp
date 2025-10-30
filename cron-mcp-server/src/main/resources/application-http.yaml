@@ -1,5 +1,7 @@
+server:
+  port: 8080
 spring:
   ai:
     mcp:
       server:
-        protocol: streamable
+        protocol: stateless

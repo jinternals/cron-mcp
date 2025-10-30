@@ -1,7 +1,7 @@
-package com.jinternals.demo.ai.mcp.server.services.cron.impl;
+package com.jinternals.cron.mcp.server.services.cron.impl;
 
-import com.jinternals.demo.ai.mcp.server.services.cron.CronStrategy;
-import com.jinternals.demo.ai.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.services.cron.CronStrategy;
+import com.jinternals.cron.mcp.server.constants.OS;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.jinternals.demo.ai.mcp.server.utils.Util.run;
-import static com.jinternals.demo.ai.mcp.server.utils.Util.tailFile;
+import static com.jinternals.cron.mcp.server.utils.Util.run;
+import static com.jinternals.cron.mcp.server.utils.Util.tailFile;
 
 @Component
 public class LinuxCronProvider implements CronStrategy {

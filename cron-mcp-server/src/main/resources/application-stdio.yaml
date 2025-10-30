@@ -1,12 +1,11 @@
-server:
-  port: 8080
 spring:
+  main:
+    banner-mode: off
+    web-application-type: none
   ai:
     mcp:
       server:
         stdio: true
-
-
 
 logging.level.org.springframework.ai: DEBUG
 logging.level.io.modelcontextprotocol: DEBUG

@@ -1,4 +1,4 @@
-package com.jinternals.demo.ai.mcp.server.services.cron;
+package com.jinternals.cron.mcp.server.services.cron;
 
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import lombok.AllArgsConstructor;

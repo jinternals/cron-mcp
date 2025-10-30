@@ -1,12 +1,12 @@
-package com.jinternals.demo.ai.mcp.server.services.cron;
+package com.jinternals.cron.mcp.server.services.cron;
 
-import com.jinternals.demo.ai.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.constants.OS;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.jinternals.demo.ai.mcp.server.constants.OS.OTHER;
-import static com.jinternals.demo.ai.mcp.server.utils.Util.os;
+import static com.jinternals.cron.mcp.server.constants.OS.OTHER;
+import static com.jinternals.cron.mcp.server.utils.Util.os;
 
 @Service
 public class CronService {

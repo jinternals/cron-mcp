@@ -1,8 +1,8 @@
-package com.jinternals.demo.ai.mcp.server.services.cron.impl;
+package com.jinternals.cron.mcp.server.services.cron.impl;
 
 
-import com.jinternals.demo.ai.mcp.server.constants.OS;
-import com.jinternals.demo.ai.mcp.server.services.cron.CronStrategy;
+import com.jinternals.cron.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.services.cron.CronStrategy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.jinternals.demo.ai.mcp.server.utils.Util.run;
-import static com.jinternals.demo.ai.mcp.server.utils.Util.tailFile;
+import static com.jinternals.cron.mcp.server.utils.Util.run;
+import static com.jinternals.cron.mcp.server.utils.Util.tailFile;
 
 @Component
 @ConditionalOnProperty(name = "cron.mac.backend", havingValue = "crontab")

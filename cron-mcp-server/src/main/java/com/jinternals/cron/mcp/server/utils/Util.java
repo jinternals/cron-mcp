@@ -1,6 +1,6 @@
-package com.jinternals.demo.ai.mcp.server.utils;
+package com.jinternals.cron.mcp.server.utils;
 
-import com.jinternals.demo.ai.mcp.server.constants.OS;
+import com.jinternals.cron.mcp.server.constants.OS;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
