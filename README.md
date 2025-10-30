@@ -1,7 +1,5 @@
 # cron-mcp
 
----
-
 Cross-platform **cron and task scheduler integration layer** exposing a Model Context Protocol (MCP) server. `cron-mcp` lets you inspect, explain, and manage scheduled jobs across **Linux**, **macOS** and **Windows** via MCP **tools**, **resources**, and **prompts**.
 
 ---
@@ -12,10 +10,6 @@ Cross-platform **cron and task scheduler integration layer** exposing a Model Co
 - **Prompts** define structured prompt templates that the model or user can trigger — these often combine tools and resources. They provide reusable, guided interactions. Think of them as prompt snippets with metadata.
 
 ---
-
-
-
----
 **Debug and Test using MCP Inspector:**
 
 - https://modelcontextprotocol.io/docs/tools/inspector
@@ -24,4 +18,4 @@ Cross-platform **cron and task scheduler integration layer** exposing a Model Co
 npx @modelcontextprotocol/inspector
 ```
 
-![inspector.png](images/inspector.png)
+![inspector.png](./images/inspector.png)
