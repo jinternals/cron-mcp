@@ -1,49 +1,27 @@
 # cron-mcp
 
-Cross-platform **cron and task scheduler integration layer** exposing a Model Context Protocol (MCP) server.  
-`cron-mcp` lets you inspect, explain, and manage scheduled jobs across **Linux**, **macOS** and **Windows** via MCP **tools**, **resources**, and **prompts**.
+---
+
+Cross-platform **cron and task scheduler integration layer** exposing a Model Context Protocol (MCP) server. `cron-mcp` lets you inspect, explain, and manage scheduled jobs across **Linux**, **macOS** and **Windows** via MCP **tools**, **resources**, and **prompts**.
 
 ---
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-## Table of Contents
-
-- [Features](#features)
-- [Quick start](#quick-start)
-- [Usage examples](#usage-examples)
-- [Architecture & key classes](#architecture--key-classes)
-- [Configuration](#configuration)
-- [Development & testing](#development--testing)
-- [Contributing](#contributing)
-- [License](#license)
+**Concepts:**
+- **Resources** are external data sources or structured assets the model can access via the MCP server — e.g., files, APIs, databases, or any external systems. They make information available to the model for reference or grounding.
+- **Tools** are actions that the model can call — small, focused, safe operations that do work (not just read data). They let the model do something rather than just see something.
+- **Prompts** define structured prompt templates that the model or user can trigger — these often combine tools and resources. They provide reusable, guided interactions. Think of them as prompt snippets with metadata.
 
 ---
 
-## Features
 
-- MCP resources exposing system state:
-    - `resource://cron/user`, `resource://cron/system`, `resource://cron/log` (see [`CronResources`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/CronResources.java))
-- MCP tools for management:
-    - `listJobs`, `addJob`, `removeJob` (see [`CronTools`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/CronTools.java))
-- MCP prompts for natural-language assistance:
-    - `explain_cron_line`, `new_cron_entry`, `remove_by_match_preview` (see [`CronPrompts`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/CronPrompts.java))
-- OS-aware strategy pattern for platform specifics:
-    - Implementations: [`LinuxCronProvider`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/impl/LinuxCronProvider.java), [`MacCrontabStrategy`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/impl/MacCrontabStrategy.java), [`MacLaunchdStrategy`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/impl/MacLaunchdStrategy.java), [`WindowsCronProvider`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/impl/WindowsCronProvider.java), and [`OtherCronProvider`](cron-mcp-server/src/main/java/com/jinternals/demo/ai/mcp/server/services/cron/impl/OtherCronProvider.java)
 
 ---
+**Debug and Test using MCP Inspector:**
 
-## Quick start
+- https://modelcontextprotocol.io/docs/tools/inspector
 
-Prerequisites: Java 21+ and Maven.
+```shell
+npx @modelcontextprotocol/inspector
+```
 
-```bash
-# clone repo
-git clone https://github.com/jinternals/cron-mcp.git
-cd cron-mcp/cron-mcp-server
-
-# build
-mvn clean package -DskipTests
-
-# run (JAR path will vary by version)
-java -jar target/cron-mcp-server-*.jar
+![inspector.png](images/inspector.png)
