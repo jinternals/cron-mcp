@@ -37,7 +37,7 @@ public class CronTools {
 
     @McpTool(
             name = "removeJob",
-            description = "Remove jobs by substring (crontab line, LaunchAgent label, or Task name)"
+            description = "Remove a scheduled job by substring (crontab line, LaunchAgent label, or Task name)"
     )
     public CallToolResult removeJob(
             @McpToolParam(description = "substring or exact name", required = true) String match

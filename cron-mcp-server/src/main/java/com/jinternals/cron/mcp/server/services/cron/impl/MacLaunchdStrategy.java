@@ -20,7 +20,9 @@ import static com.jinternals.cron.mcp.server.utils.Util.*;
 public class MacLaunchdStrategy implements CronStrategy {
 
     @Override
-    public OS os() { return OS.MAC; }
+    public OS os() {
+        return OS.MAC;
+    }
 
     @Override
     public String userCrontab() throws Exception {
@@ -82,28 +84,67 @@ public class MacLaunchdStrategy implements CronStrategy {
 
     @Override
     public String addJob(String schedule, String command, String nameHint) throws Exception {
-        String label = ("com.jinternals.cronmcp." + (nameHint == null ? String.valueOf(System.currentTimeMillis()) : nameHint))
-                .replaceAll("[^a-zA-Z0-9._-]", "_");
-        String[] p = schedule.trim().split("\\s+");
-        int minute = (p.length > 0 && p[0].matches("\\d+")) ? Integer.parseInt(p[0]) : 0;
-        int hour = (p.length > 1 && p[1].matches("\\d+")) ? Integer.parseInt(p[1]) : 0;
-        Path agents = Path.of(System.getProperty("user.home"), "Library", "LaunchAgents");
-        Files.createDirectories(agents);
-        Path plist = agents.resolve(label + ".plist");
-        String xml = """
-              <?xml version="1.0" encoding="UTF-8"?>
-              <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-              <plist version="1.0"><dict>
-                <key>Label</key><string>%s</string>
-                <key>ProgramArguments</key><array><string>/bin/sh</string><string>-lc</string><string>%s</string></array>
-                <key>RunAtLoad</key><true/>
-                <key>StartCalendarInterval</key><dict><key>Minute</key><integer>%d</integer><key>Hour</key><integer>%d</integer></dict>
-                <key>StandardOutPath</key><string>%s/%s.out.log</string>
-                <key>StandardErrorPath</key><string>%s/%s.err.log</string>
-              </dict></plist>""".formatted(label, command, minute, hour, agents, label, agents, label);
-        Files.writeString(plist, xml);
-        try { run(List.of("launchctl", "unload", plist.toString()), null); } catch (Exception ignore) {}
-        run(List.of("launchctl", "load", plist.toString()), null);
+        // Generate a sanitized label from the name hint or timestamp
+        String label = "com.jinternals.cronmcp." +
+                (nameHint != null ? nameHint : System.currentTimeMillis());
+        label = label.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+        // Parse minute and hour from cron schedule
+        String[] parts = schedule.trim().split("\\s+");
+        int minute = (parts.length > 0 && parts[0].matches("\\d+"))
+                ? Integer.parseInt(parts[0]) : 0;
+        int hour = (parts.length > 1 && parts[1].matches("\\d+"))
+                ? Integer.parseInt(parts[1]) : 0;
+
+        // Set up LaunchAgents directory and plist file
+        Path agentsDir = Path.of(System.getProperty("user.home"), "Library", "LaunchAgents");
+        Files.createDirectories(agentsDir);
+        Path plistFile = agentsDir.resolve(label + ".plist");
+
+        // Create plist XML content
+        String plistContent = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
+                  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                  <dict>
+                    <key>Label</key>
+                    <string>%s</string>
+                    <key>ProgramArguments</key>
+                    <array>
+                      <string>/bin/sh</string>
+                      <string>-lc</string>
+                      <string>%s</string>
+                    </array>
+                    <key>RunAtLoad</key>
+                    <true/>
+                    <key>StartCalendarInterval</key>
+                    <dict>
+                      <key>Minute</key>
+                      <integer>%d</integer>
+                      <key>Hour</key>
+                      <integer>%d</integer>
+                    </dict>
+                    <key>StandardOutPath</key>
+                    <string>%s/%s.out.log</string>
+                    <key>StandardErrorPath</key>
+                    <string>%s/%s.err.log</string>
+                  </dict>
+                </plist>
+                """.formatted(label, command, minute, hour, agentsDir, label, agentsDir, label);
+
+        Files.writeString(plistFile, plistContent);
+
+        // Unload existing job if present (ignore errors)
+        try {
+            run(List.of("launchctl", "unload", plistFile.toString()), null);
+        } catch (Exception ignored) {
+           //TODO: Log it
+        }
+
+        // Load the new job
+        run(List.of("launchctl", "load", plistFile.toString()), null);
+
         return "launchd job created: " + label;
     }
 
@@ -112,7 +153,9 @@ public class MacLaunchdStrategy implements CronStrategy {
         Path agents = Path.of(System.getProperty("user.home"), "Library", "LaunchAgents");
         if (Files.isDirectory(agents)) try (var ds = Files.newDirectoryStream(agents, "*" + match + "*.plist")) {
             for (Path p : ds) {
-                try { run(List.of("launchctl", "unload", p.toString()), null); } catch (Exception ignore) {}
+                try {
+                    run(List.of("launchctl", "unload", p.toString()), null);
+                } catch (Exception ignore) {}
                 Files.deleteIfExists(p);
             }
         }
@@ -144,9 +187,15 @@ public class MacLaunchdStrategy implements CronStrategy {
                                 boolean binary = false;
                                 for (int i = 0; i < read; i++) {
                                     byte b = head[i];
-                                    if (b == 0) { binary = true; break; }
+                                    if (b == 0) {
+                                        binary = true;
+                                        break;
+                                    }
                                     // crude control-char test
-                                    if (b < 0x09 || (b > 0x0A && b < 0x20)) { binary = true; break; }
+                                    if (b < 0x09 || (b > 0x0A && b < 0x20)) {
+                                        binary = true;
+                                        break;
+                                    }
                                 }
 
                                 out.append("# File: ").append(path.getFileName()).append("\n");

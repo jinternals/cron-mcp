@@ -67,17 +67,29 @@ public class CronPrompts {
     public GetPromptResult removeByMatch(
             @McpArg(name = "match", required = true) String match
     ) {
-        String body = """
-            Analyze impact before removal:
-            - Show lines matching '%s'
-            - Warn if pattern too broad
+        String bodyUser = """
+        Analyze impact before removal:
+        - Show lines matching '%s'
+        - Warn if pattern too broad
 
-            MATCH = "%s"
-            """.formatted(match, match);
+        MATCH = "%s"
+        """.formatted(match, match);
+
+        // Add a MACHINE message that tells the agent how to call the tool if removal is desired.
+        String callHint = """
+        IF YOU WANT TO PROCEED: call tool removeJob with JSON argument:
+        TOOL_CALL removeJob %s
+        (Example: TOOL_CALL removeJob {"match":"%s"})
+        """.formatted(match, match);
 
         return new GetPromptResult(
                 "Remove Cron Preview",
-                List.of(new PromptMessage(Role.USER, new TextContent(body)))
+                List.of(
+                        new PromptMessage(Role.USER, new TextContent(bodyUser)),
+                        // Add an assistant/system-style hint that the agent can parse
+                        new PromptMessage(Role.ASSISTANT, new TextContent(callHint))
+                )
         );
     }
+
 }
