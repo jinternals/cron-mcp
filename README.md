@@ -7,8 +7,8 @@ Cross-platform **cron and task scheduler integration layer** exposing a Model Co
 ![concepts.png](./images/concepts.png)
 
 **Concepts:**
-- **Resources** are external data sources or structured assets the model can access via the MCP server — e.g., files, APIs, databases, or any external systems. They make information available to the model for reference or grounding.
 - **Tools** are actions that the model can call — small, focused, safe operations that do work (not just read data). They let the model do something rather than just see something.
+- **Resources** are external data sources or structured assets the model can access via the MCP server — e.g., files, APIs, databases, or any external systems. They make information available to the model for reference or grounding.
 - **Prompts** define structured prompt templates that the model or user can trigger — these often combine tools and resources. They provide reusable, guided interactions. Think of them as prompt snippets with metadata.
 
 ---
