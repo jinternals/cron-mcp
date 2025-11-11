@@ -23,7 +23,7 @@ npx @modelcontextprotocol/inspector
 ![inspector.png](./images/inspector.png)
 
 ---
-###  Example
+###  DEMO
 
 
 ![Example 1.png](images/Example%201.png)
